@@ -1,6 +1,6 @@
 {
     "name": "fronji/fronjicfstream",
-    "description": "Fronji Cloudflare Stream Laravel",
+    "description": "Fronji Laravel Cloudflare Stream ",
     "require": {
         "php": ">=5.5",
         "guzzlehttp/guzzle": "^7.4",
