@@ -19,5 +19,13 @@
         "firebase/php-jwt": "^5.2",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "fronji\\CloudflareStream\\Laravel\\ServiceProvider"
+            ]
+        }
     }
+    
 }
