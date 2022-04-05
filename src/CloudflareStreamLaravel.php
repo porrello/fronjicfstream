@@ -1,6 +1,6 @@
 <?php
 
-namespace AFloeter\CloudflareStream;
+namespace fronji\CloudflareStream;
 
 class CloudflareStreamLaravel extends CloudflareStream
 {
