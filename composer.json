@@ -1,34 +1,24 @@
 {
-    "name": "fronji/fronjicfstream",
-    "description": "Fronji Laravel Cloudflare Stream ",
+    "name": "fronji/cloudflare-streams-php",
+    "description": "Cloudfare SDK for Streams API",
+    "type": "library",
     "require": {
-        "php": ">=5.5",
-        "guzzlehttp/guzzle": "^7.4"
+        "php": ">=5.6",
+        "ext-curl": "*"
     },
+    "license": "MIT",
     "authors": [
         {
-            "name": "Dog From The Moon",
-            "email": "hello@dogfromthemoon.com"
+            "name": "Adro Rocker",
+            "email": "me@adro.rocks"
         }
-    ],
-    "homepage": "https://dogfromthemoon.com",
-    "license": "MIT",
-    "keywords": [
-        "stream",
-        "cloudflare",
-        "laravel",
-        "php"
     ],
     "autoload": {
         "psr-4": {
-            "fronji\\fronjicfstream\\": "src"
+            "BoldBrush\\Cloudflare\\API\\": "src/"
         }
     },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "fronji\\fronjicfstream\\Laravel\\ServiceProvider"
-            ]
-        }
-    }
+    "autoload-dev": {
+    },
+    "minimum-stability": "stable"
 }
