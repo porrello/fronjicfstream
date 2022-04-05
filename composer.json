@@ -1,0 +1,35 @@
+{
+    "name": "fronji/fronjicfstream",
+    "description": "Fronji Cloudflare Stream Laravel",
+    "require": {
+        "php": ">=5.5",
+        "guzzlehttp/guzzle": "^6.3",
+        "illuminate/support": "^5.7"
+    },
+    "authors": [
+        {
+            "name": "Dog From The Moon",
+            "email": "hello@dogfromthemoon.com"
+        }
+    ],
+    "homepage": "https://dogfromthemoon.com",
+    "license": "MIT",
+    "keywords": [
+        "stream",
+        "cloudflare",
+        "laravel",
+        "php"
+    ],
+    "autoload": {
+        "psr-4": {
+            "fronji\\fronjicfstream\\": "packages/fronji/fronjicfstream/src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "fronji\\fronjicfstream\\Laravel\\ServiceProvider"
+            ]
+        }
+    }
+}
