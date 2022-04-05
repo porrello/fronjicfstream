@@ -39,7 +39,7 @@ class fronjicfstream
      *
      * @param string $resourceUrl
      *
-     * @return json Response body contents
+     * @return json Response body content
      */
     public function status($resourceUrl)
     {
