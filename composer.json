@@ -22,7 +22,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "fronji\\fronjicfstream\\": "packages/fronji/fronjicfstream/src"
+            "fronji\\fronjicfstream\\": "src"
         }
     },
     "extra": {
