@@ -3,8 +3,8 @@
     "description": "Fronji Cloudflare Stream Laravel",
     "require": {
         "php": ">=5.5",
-        "guzzlehttp/guzzle": "^6.3",
-        "illuminate/support": "^5.7"
+        "guzzlehttp/guzzle": "^7.4",
+        "illuminate/support": "^9.6"
     },
     "authors": [
         {
