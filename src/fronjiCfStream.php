@@ -1,337 +1,218 @@
 <?php
 
-namespace fronji\fronjiCfStream;
+namespace fronji\fronjicfstream;
 
-use fronji\fronjiCfStream\Exceptions\NoCredentialsException;
-use fronji\fronjiCfStream\Exceptions\NoPrivateKeyOrTokenException;
-use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\RequestOptions;
-use Psr\Http\Message\ResponseInterface;
+use fronji\fronjicfstream\Exceptions\InvalidFileException;
+use fronji\fronjicfstream\Exceptions\InvalidOriginsException;
+use fronji\fronjicfstream\Exceptions\OperationFailedException;
+use fronji\fronjicfstream\Exceptions\InvalidCredentialsException;
 
-class fronjiCfStream
+class fronjicfstream
 {
-    private $accountId;
-    private $authKey;
-    private $authEMail;
-    private $privateKeyId;
-    private $privateKeyToken;
-    private $guzzle;
+    private $key;
+    private $zone;
+    private $email;
 
     /**
-     * fronjiCfStream constructor.
+     * Initialize fronjicfstream with authentication credentials.
      *
-     * @param string $accountId
-     * @param string $authKey
-     * @param string $authEMail
-     * @param null $privateKey
-     * @param null $privateKeyToken
-     * @throws NoCredentialsException
+     * @param string $key
+     * @param string $zone
+     * @param string $email
      */
-    public function __construct(string $accountId, string $authKey, string $authEMail, $privateKey = null, $privateKeyToken = null)
+    public function __construct($key, $zone, $email)
     {
-        if (empty($accountId) || empty($authKey) || empty($authEMail)) {
-            throw new NoCredentialsException();
+        dd($key, $zone, $email);
+        if (empty($key) || empty($zone) || empty($email)) {
+            throw new InvalidCredentialsException();
         }
 
-        $this->accountId = $accountId;
-        $this->authKey = $authKey;
-        $this->authEMail = $authEMail;
-        $this->guzzle = new Client([
-            'base_uri' => 'https://api.cloudflare.com/client/v4/'
+        $this->key = $key;
+        $this->zone = $zone;
+        $this->email = $email;
+
+        $this->client = new Client();
+    }
+
+    /**
+     * Get the status of a video.
+     *
+     * @param string $resourceUrl
+     *
+     * @return json Response body content
+     */
+    public function status($resourceUrl)
+    {
+        $response = $this->client->get($resourceUrl, [
+            'headers' => [
+                'X-Auth-Key' => $this->key,
+                'X-Auth-Email' => $this->email,
+                'Content-Type' => 'application/json',
+            ],
         ]);
 
-        if (!empty($privateKey) && !empty($privateKeyToken)) {
-            $this->privateKeyId = $privateKey;
-            $this->privateKeyToken = $privateKeyToken;
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * Upload a video with a given filepath.
+     *
+     * @param string $filepath
+     *
+     * @return string $resourceUrl URL to manage the video resource
+     */
+    public function upload($filepath)
+    {
+        $file = fopen($filepath, 'r');
+        if (!$file) {
+            throw new InvalidFileException();
+        }
+
+        $filesize = filesize($filepath);
+        $filename = basename($filepath);
+
+        $response = $this->post($filename, $filesize);
+        $resourceUrl = $response->getHeader('Location')[0];
+        $this->patch($resourceUrl, $file, $filesize);
+
+        return $resourceUrl;
+    }
+
+    /**
+     * Create a resource on Cloudflare Stream.
+     *
+     * @param string $filename
+     * @param int    $filesize
+     *
+     * @return object $response Response from Cloudflare
+     */
+    public function post($filename, $filesize)
+    {
+        if (empty($filename) || empty($filesize)) {
+            throw new InvalidFileException();
+        }
+
+        $response = $this->client->post("https://api.cloudflare.com/client/v4/zones/{$this->zone}/media", [
+            'headers' => [
+                'X-Auth-Key' => $this->key,
+                'X-Auth-Email' => $this->email,
+                'Content-Length' => 0,
+                'Tus-Resumable' => '1.0.0',
+                'Upload-Length' => $filesize,
+                'Upload-Metadata' => "filename {$filename}",
+            ],
+        ]);
+
+        if (201 != $response->getStatusCode()) {
+            throw new OperationFailedException();
+        }
+
+        return $response;
+    }
+
+    /**
+     * Upload the file to Cloudflare Stream.
+     *
+     * @param string   $resourceUrl
+     * @param resource $file        fopen() pointer resource
+     * @param int      $filesize
+     *
+     * @return object $response Response from Cloudflare
+     */
+    public function patch($resourceUrl, $file, $filesize)
+    {
+        if (empty($file)) {
+            throw new InvalidFileException();
+        }
+
+        $response = $this->client->patch($resourceUrl, [
+            'headers' => [
+                'X-Auth-Key' => $this->key,
+                'X-Auth-Email' => $this->email,
+                'Content-Length' => $filesize,
+                'Content-Type' => 'application/offset+octet-stream',
+                'Tus-Resumable' => '1.0.0',
+                'Upload-Offset' => 0,
+            ],
+            'body' => $file,
+        ]);
+
+        if (204 != $response->getStatusCode()) {
+            throw new OperationFailedException();
+        }
+
+        return $response;
+    }
+
+    /**
+     * Delete video from Cloudflare Stream.
+     *
+     * @param string $resourceUrl
+     */
+    public function delete($resourceUrl)
+    {
+        $response = $this->client->delete($resourceUrl, [
+            'headers' => [
+                'X-Auth-Key' => $this->key,
+                'X-Auth-Email' => $this->email,
+                'Content-Length' => 0,
+            ],
+        ]);
+
+        if (204 != $response->getStatusCode()) {
+            throw new OperationFailedException();
         }
     }
 
     /**
-     * Get a list of videos.
+     * Get embed code for the video.
      *
-     * @param array $customParameters
-     * @return string
-     * @throws GuzzleException
+     * @param string $resourceUrl
+     *
+     * @return string HTML embed code
      */
-    public function list($customParameters = [])
+    public function code($resourceUrl)
     {
-        // Define standard parameters
-        $parameters = [
-            'include_counts' => true,
-            'limit' => 1000,
-            'asc' => false
-        ];
+        $response = $this->client->get("{$resourceUrl}/embed", [
+            'headers' => [
+                'X-Auth-Key' => $this->key,
+                'X-Auth-Email' => $this->email,
+                'Content-Type' => 'application/json',
+            ],
+        ]);
 
-        // Set custom parameters
-        if (!empty($customParameters) && is_array($customParameters)) {
-            $parameters = array_merge($parameters, $customParameters);
+        if (200 != $response->getStatusCode()) {
+            throw new OperationFailedException();
         }
 
-        return $this->request('accounts/' . $this->accountId . '/stream?' . http_build_query($parameters))->getBody()->getContents();
-    }
-
-    /**
-     * Fetch details of a single video.
-     *
-     * @param string $uid
-     * @return string
-     * @throws GuzzleException
-     */
-    public function video(string $uid)
-    {
-        return $this->request('accounts/' . $this->accountId . '/stream/' . $uid)->getBody()->getContents();
-    }
-
-    /**
-     * Get embed code. Could be returned with signed token if necessary.
-     *
-     * @param string $uid
-     * @param bool $addControls
-     * @param bool $useSignedToken
-     * @return string
-     * @throws NoPrivateKeyOrTokenException|GuzzleException
-     */
-    public function embed(string $uid, bool $addControls = false, bool $useSignedToken = true)
-    {
-        $embed = $this->request('accounts/' . $this->accountId . '/stream/' . $uid . '/embed')->getBody();
-        $requireSignedToken = false;
-
-        // Require signed token?
-        if ($useSignedToken) {
-            $video = json_decode($this->video($uid), true);
-            $requireSignedToken = $video['result']['requireSignedURLs'];
-        }
-
-        // Add controls attribute?
-        if ($addControls) {
-            return str_replace('src="' . $uid . '"', 'src="' . ($useSignedToken && $requireSignedToken ? $this->getSignedToken($uid) : $uid) . '" controls', $embed);
-        }
-
-        // Signed URL necessary?
-        if ($useSignedToken && $requireSignedToken) {
-            return str_replace('src="' . $uid . '"', 'src="' . $this->getSignedToken($uid) . '"', $embed);
-        }
-
-        // Return embed code
-        return $embed;
-    }
-
-    /**
-     * Delete video.
-     *
-     * @param string $uid
-     * @return string
-     * @throws GuzzleException
-     */
-    public function delete(string $uid)
-    {
-        return $this->request('accounts/' . $this->accountId . '/stream/' . $uid, 'delete')->getBody()->getContents();
-    }
-
-    /**
-     * Get meta data for a specific video.
-     *
-     * @param string $uid
-     * @return array
-     * @throws GuzzleException
-     */
-    public function getMeta(string $uid)
-    {
-
-        // Get all data
-        $data = json_decode($this->video($uid), true);
-
-        // Return meta data
-        return $data['result']['meta'];
-    }
-
-    /**
-     * Set meta data for a specific video.
-     *
-     * @param string $uid
-     * @param array $meta
-     * @return string
-     * @throws GuzzleException
-     */
-    public function setMeta(string $uid, array $meta)
-    {
-        // Merge meta data
-        $meta = [
-            'meta' => array_merge($this->getMeta($uid), $meta)
-        ];
-
-        // Request
-        $response = $this->request('accounts/' . $this->accountId . '/stream/' . $uid, 'post', $meta);
-
-        // Return result
         return $response->getBody()->getContents();
     }
 
     /**
-     * Remove meta data by key.
+     * Set allowedOrigins on the video.
      *
-     * @param string $uid
-     * @param string $metaKey
-     * @return string
-     * @throws GuzzleException
+     * @param string $resourceUrl
+     * @param string $origins     Comma separated hostnames
      */
-    public function removeMeta(string $uid, string $metaKey)
+    public function allow($resourceUrl, $origins)
     {
-
-        // Merge meta data
-        $meta = [
-            'meta' => array_merge($this->getMeta($uid))
-        ];
-
-        // Remove key
-        if (array_key_exists($metaKey, $meta['meta'])) {
-            unset($meta['meta'][$metaKey]);
+        if (false !== strpos($origins, '/')) {
+            throw new InvalidOriginsException();
         }
 
-        // Request
-        return $this->request('accounts/' . $this->accountId . '/stream/' . $uid, 'post', $meta)->getBody()->getContents();
-    }
+        $videoId = @end(explode('/', $resourceUrl));
 
-    /**
-     * Get name of a video.
-     *
-     * @param string $uid
-     * @return string
-     * @throws GuzzleException
-     */
-    public function getName(string $uid)
-    {
-        $meta = $this->getMeta($uid);
-        return $meta['name'];
-    }
+        $response = $this->client->post($resourceUrl, [
+            'body' => "{\"uid\": \"{$videoId}\", \"allowedOrigins\": [\"{$origins}\"]}",
+            'headers' => [
+                'X-Auth-Key' => $this->key,
+                'X-Auth-Email' => $this->email,
+            ],
+        ]);
 
-    /**
-     * Rename a video.
-     *
-     * @param string $uid
-     * @param string $name
-     * @return string
-     * @throws GuzzleException
-     */
-    public function setName(string $uid, string $name)
-    {
-        return $this->setMeta($uid, ['name' => $name]);
-    }
-
-    /**
-     * Set whether a specific video requires signed URLs or not.
-     *
-     * @param string $uid
-     * @param bool $required
-     * @return string
-     * @throws GuzzleException
-     */
-    public function setSignedURLs(string $uid, bool $required)
-    {
-        return $this->request('accounts/' . $this->accountId . '/stream/' . $uid, 'post', [
-            'uid' => $uid,
-            'requireSignedURLS' => $required
-        ])->getBody()->getContents();
-    }
-
-    /**
-     * Get playback URLs of a specific video.
-     *
-     * @param string $uid
-     * @param bool $useSignedToken
-     * @return string
-     * @throws GuzzleException
-     * @throws NoPrivateKeyOrTokenException
-     */
-    public function getPlaybackURLs(string $uid, $useSignedToken = true)
-    {
-
-        // Get all data
-        $video = json_decode($this->video($uid), true);
-
-        // Signed URL necessary?
-        if ($useSignedToken && $video['result']['requireSignedURLs']) {
-
-            // Replace uid with signed token
-            foreach ($video['result']['playback'] as $key => $value) {
-                $video['result']['playback'][$key] = str_replace($uid, $this->getSignedToken($uid), $value);
-            }
+        if (200 != $response->getStatusCode()) {
+            throw new OperationFailedException();
         }
-
-        // Return playback URLs
-        return json_encode($video['result']['playback']);
-    }
-
-    /**
-     * Get signed token for a video.
-     *
-     * @param string $uid
-     * @param int $addHours
-     * @return string
-     * @throws NoPrivateKeyOrTokenException
-     */
-    public function getSignedToken(string $uid, int $addHours = 4)
-    {
-        if (empty($this->privateKeyId) || empty($this->privateKeyToken)) {
-            throw new NoPrivateKeyOrTokenException();
-        }
-
-        return JWT::encode([
-            'kid' => $this->privateKeyId,
-            'sub' => $uid,
-            "exp" => time() + ($addHours * 60 * 60)
-        ], base64_decode($this->privateKeyToken), 'RS256');
-    }
-
-    /**
-     * Get width and height of a video.
-     *
-     * @param string $uid
-     * @return string
-     * @throws GuzzleException
-     */
-    public function getDimensions(string $uid)
-    {
-        // Get all data
-        $video = json_decode($this->video($uid), true);
-
-        // Return playback URLs
-        return json_encode($video['result']['input']);
-    }
-
-    /**
-     * Request wrapper function.
-     *
-     * @param string $endpoint
-     * @param string $method
-     * @param array $data
-     * @return ResponseInterface
-     * @throws GuzzleException
-     */
-    private function request(string $endpoint, $method = 'get', $data = [])
-    {
-        // Define headers.
-        $headers = [
-            'X-Auth-Key' => $this->authKey,
-            'X-Auth-Email' => $this->authEMail,
-            'Content-Type' => 'application/json'
-        ];
-
-        // Define options for post request method...
-        if (count($data) && $method === "post") {
-            $options = [
-                'headers' => $headers,
-                RequestOptions::JSON => $data
-            ];
-        } // ...or define options for all other request methods
-        else {
-            $options = [
-                'headers' => $headers,
-            ];
-        }
-
-        return $this->guzzle->request($method, $endpoint, $options);
     }
 }
