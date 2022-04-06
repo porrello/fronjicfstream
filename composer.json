@@ -23,12 +23,5 @@
         "psr-4": {
             "fronji\\fronjicfstream\\": "src"
         }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "fronji\\fronjicfstream\\Laravel\\ServiceProvider"
-            ]
-        }
     }
 }
