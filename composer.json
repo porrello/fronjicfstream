@@ -1,33 +1,34 @@
 {
-    "name": "afloeter/laravel-cloudflare-stream",
-    "description": "Manage the Cloudflare Stream API with ease.",
+    "name": "fronji/fronjicfstream",
+    "description": "Fronji Cloudflare Stream Laravel",
+    "require": {
+        "php": ">=5.5",
+        "guzzlehttp/guzzle": "^7.4"
+    },
     "authors": [
         {
-            "name": "Alexander Flöter",
-            "email": "af@mediaguy.de"
+            "name": "Dog From The Moon",
+            "email": "hello@dogfromthemoon.com"
         }
     ],
+    "homepage": "https://dogfromthemoon.com",
     "license": "MIT",
-    "minimum-stability": "dev",
+    "keywords": [
+        "stream",
+        "cloudflare",
+        "laravel",
+        "php"
+    ],
     "autoload": {
         "psr-4": {
-            "fronji\\fronjicfstream\\": "src"
+            "fronji\\fronjicfstream\\": "packages/fronji/fronjicfstream/src"
         }
-    },
-    "require": {
-        "ext-json": "*",
-        "firebase/php-jwt": "^5.2",
-        "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^8.0"
     },
     "extra": {
         "laravel": {
             "providers": [
-                "fronji\\fronjiCfStream\\ServiceProvider"
-            ],
-            "aliases": {
-                "Debugbar": "fronji\\fronjiCfStream\\Facade"
-            }
+                "fronji\\fronjicfstream\\Laravel\\ServiceProvider"
+            ]
         }
     }
 }
