@@ -1,10 +1,9 @@
 <?php
 
-namespace AFloeter\CloudflareStream\Exceptions;
+namespace fronji\fronjicfstream\Exceptions;
 
 use Exception;
 
 class NoPrivateKeyOrTokenException extends Exception
 {
-
 }

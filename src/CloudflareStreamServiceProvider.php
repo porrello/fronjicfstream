@@ -1,10 +1,10 @@
 <?php
 
-namespace AFloeter\CloudflareStream;
+namespace fronji\fronjicfstream;
 
 use Illuminate\Support\ServiceProvider;
 
-class CloudflareStreamServiceProvider extends ServiceProvider
+class fronjicfstreamServiceProvider extends ServiceProvider
 {
     /**
      * Boot.

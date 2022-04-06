@@ -1,8 +1,8 @@
 <?php
 
-namespace AFloeter\CloudflareStream;
+namespace fronji\fronjicfstream;
 
-class CloudflareStreamLaravel extends CloudflareStream
+class fronjicfstreamLaravel extends fronjicfstream
 {
     public function __construct()
     {
