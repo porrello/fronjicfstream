@@ -1,9 +1,9 @@
 <?php
 
-namespace fronji\CloudflareStream;
+namespace AFloeter\CloudflareStream;
 
-use fronji\CloudflareStream\Exceptions\NoCredentialsException;
-use fronji\CloudflareStream\Exceptions\NoPrivateKeyOrTokenException;
+use AFloeter\CloudflareStream\Exceptions\NoCredentialsException;
+use AFloeter\CloudflareStream\Exceptions\NoPrivateKeyOrTokenException;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -192,6 +192,7 @@ class CloudflareStream
 
         // Request
         return $this->request('accounts/' . $this->accountId . '/stream/' . $uid, 'post', $meta)->getBody()->getContents();
+
     }
 
     /**
@@ -258,10 +259,12 @@ class CloudflareStream
             foreach ($video['result']['playback'] as $key => $value) {
                 $video['result']['playback'][$key] = str_replace($uid, $this->getSignedToken($uid), $value);
             }
+
         }
 
         // Return playback URLs
         return json_encode($video['result']['playback']);
+
     }
 
     /**

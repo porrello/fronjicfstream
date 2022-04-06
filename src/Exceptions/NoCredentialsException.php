@@ -1,9 +1,10 @@
 <?php
 
-namespace fronji\CloudflareStream\Exceptions;
+namespace AFloeter\CloudflareStream\Exceptions;
 
 use Exception;
 
 class NoCredentialsException extends Exception
 {
+
 }

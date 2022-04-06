@@ -1,5 +1,5 @@
 {
-    "name": "fronji/laravel-cloudflare-stream",
+    "name": "afloeter/laravel-cloudflare-stream",
     "description": "Manage the Cloudflare Stream API with ease.",
     "authors": [
         {
@@ -11,7 +11,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "fronji\\CloudflareStream\\": "src/"
+            "AFloeter\\CloudflareStream\\": "src/"
         }
     },
     "require": {
@@ -20,5 +20,4 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.0"
     }
-    
 }

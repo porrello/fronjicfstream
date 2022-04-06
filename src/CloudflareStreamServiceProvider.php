@@ -1,6 +1,6 @@
 <?php
 
-namespace fronji\CloudflareStream;
+namespace AFloeter\CloudflareStream;
 
 use Illuminate\Support\ServiceProvider;
 

@@ -33,20 +33,20 @@ Add the following to your root `composer.json` and install with `composer instal
 
     {
       "require": {
-        "fronji/laravel-cloudflare-stream": "~1.0.0"
+        "afloeter/laravel-cloudflare-stream": "~1.0.0"
       }
     },
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/fronji/laravel-cloudflare-stream"
+            "url": "https://github.com/afloeter/laravel-cloudflare-stream"
         }
     ]
 
-...or use `composer require fronji/laravel-cloudflare-stream` in your console after just adding the repository to your composer.json file.
+...or use `composer require afloeter/laravel-cloudflare-stream` in your console after just adding the repository to your composer.json file.
 
 ### Step 2: Publish the config file for Laravel projects
-Publish the config file with `php artisan vendor:publish --provider="fronji\CloudflareStreamServiceProvider"`.
+Publish the config file with `php artisan vendor:publish --provider="AFloeter\CloudflareStreamServiceProvider"`.
 
 ### Step 3: Add informationen to Laravel's `.env` file
 Add the following lines to your root `.env` file of your Laravel instance.
@@ -75,7 +75,7 @@ Otherwise: Check the [documentation](https://developers.cloudflare.com/stream/se
 ### Laravel
 If you have done the `vendor:publish` step, your credentials will be grabbed from the `config/cloudflare-stream.php` and / or `.env` file. So, you can use `CloudflareStreamLaravel()` without providing your information once again.
 
-    use fronji\CloudflareStream\CloudflareStreamLaravel;
+    use AFloeter\CloudflareStream\CloudflareStreamLaravel;
     
     ...
     
@@ -87,7 +87,7 @@ If you have done the `vendor:publish` step, your credentials will be grabbed fro
 ### Generic PHP
 If you are on composer-enabled projects use `CloudflareStream()`. Without composer try requiring `src/CloudflareStream.php` directly into your project.
 
-    use fronji\CloudflareStream\CloudflareStream;
+    use AFloeter\CloudflareStream\CloudflareStream;
     
     ...
     
@@ -98,7 +98,7 @@ If you are on composer-enabled projects use `CloudflareStream()`. Without compos
 
 If you are using signed URLs for your videos, simply add the `$privateKey` and `$privateKeyToken` variables.
 
-    use fronji\CloudflareStream\CloudflareStream;
+    use AFloeter\CloudflareStream\CloudflareStream;
     
     ...
     
