@@ -1,16 +1,16 @@
 <?php
 
-namespace fronji\fronjicfstream;
+namespace fronji\fronjiCfStream;
 
-use fronji\fronjicfstream\Exceptions\NoCredentialsException;
-use fronji\fronjicfstream\Exceptions\NoPrivateKeyOrTokenException;
+use fronji\fronjiCfStream\Exceptions\NoCredentialsException;
+use fronji\fronjiCfStream\Exceptions\NoPrivateKeyOrTokenException;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
-class fronjicfstream
+class fronjiCfStream
 {
     private $accountId;
     private $authKey;
@@ -20,7 +20,7 @@ class fronjicfstream
     private $guzzle;
 
     /**
-     * fronjicfstream constructor.
+     * fronjiCfStream constructor.
      *
      * @param string $accountId
      * @param string $authKey

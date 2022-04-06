@@ -1,6 +1,6 @@
 <?php
 
-namespace fronji\fronjicfstream\Exceptions;
+namespace fronji\fronjiCfStream\Exceptions;
 
 use Exception;
 

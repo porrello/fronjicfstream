@@ -11,7 +11,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "fronji\\fronjicfstream\\": "src/"
+            "fronji\\fronjiCfStream\\": "src/"
         }
     },
     "require": {
@@ -23,10 +23,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "fronji\\fronjicfstream\\ServiceProvider"
+                "fronji\\fronjiCfStream\\ServiceProvider"
             ],
             "aliases": {
-                "Debugbar": "fronji\\fronjicfstream\\Facade"
+                "Debugbar": "fronji\\fronjiCfStream\\Facade"
             }
         }
     }

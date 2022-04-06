@@ -1,8 +1,8 @@
 <?php
 
-namespace fronji\fronjicfstream;
+namespace fronji\fronjiCfStream;
 
-class fronjicfstreamLaravel extends fronjicfstream
+class fronjiCfStreamLaravel extends fronjiCfStream
 {
     public function __construct()
     {

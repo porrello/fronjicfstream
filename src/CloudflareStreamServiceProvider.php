@@ -1,10 +1,10 @@
 <?php
 
-namespace fronji\fronjicfstream;
+namespace fronji\fronjiCfStream;
 
 use Illuminate\Support\ServiceProvider;
 
-class fronjicfstreamServiceProvider extends ServiceProvider
+class fronjiCfStreamServiceProvider extends ServiceProvider
 {
     /**
      * Boot.

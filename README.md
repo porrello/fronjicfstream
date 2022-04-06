@@ -46,7 +46,7 @@ Add the following to your root `composer.json` and install with `composer instal
 ...or use `composer require afloeter/laravel-cloudflare-stream` in your console after just adding the repository to your composer.json file.
 
 ### Step 2: Publish the config file for Laravel projects
-Publish the config file with `php artisan vendor:publish --provider="fronji\fronjicfstreamServiceProvider"`.
+Publish the config file with `php artisan vendor:publish --provider="fronji\fronjiCfStreamServiceProvider"`.
 
 ### Step 3: Add informationen to Laravel's `.env` file
 Add the following lines to your root `.env` file of your Laravel instance.
@@ -73,36 +73,36 @@ Otherwise: Check the [documentation](https://developers.cloudflare.com/stream/se
 ## Usage
 
 ### Laravel
-If you have done the `vendor:publish` step, your credentials will be grabbed from the `config/cloudflare-stream.php` and / or `.env` file. So, you can use `fronjicfstreamLaravel()` without providing your information once again.
+If you have done the `vendor:publish` step, your credentials will be grabbed from the `config/cloudflare-stream.php` and / or `.env` file. So, you can use `fronjiCfStreamLaravel()` without providing your information once again.
 
-    use fronji\fronjicfstream\fronjicfstreamLaravel;
+    use fronji\fronjiCfStream\fronjiCfStreamLaravel;
     
     ...
     
-    $cfs = new fronjicfstreamLaravel();
+    $cfs = new fronjiCfStreamLaravel();
     $listOfVideos = $cfs->list();
     
     ...
 
 ### Generic PHP
-If you are on composer-enabled projects use `fronjicfstream()`. Without composer try requiring `src/fronjicfstream.php` directly into your project.
+If you are on composer-enabled projects use `fronjiCfStream()`. Without composer try requiring `src/fronjiCfStream.php` directly into your project.
 
-    use fronji\fronjicfstream\fronjicfstream;
+    use fronji\fronjiCfStream\fronjiCfStream;
     
     ...
     
-    $cfs = new fronjicfstream($accountId, $authKey, $authEMail);
+    $cfs = new fronjiCfStream($accountId, $authKey, $authEMail);
     $listOfVideos = $cfs->list();
     
     ...
 
 If you are using signed URLs for your videos, simply add the `$privateKey` and `$privateKeyToken` variables.
 
-    use fronji\fronjicfstream\fronjicfstream;
+    use fronji\fronjiCfStream\fronjiCfStream;
     
     ...
     
-    $cfs = new fronjicfstream($accountId, $authKey, $authEMail, $privateKey, $privateKeyToken);
+    $cfs = new fronjiCfStream($accountId, $authKey, $authEMail, $privateKey, $privateKeyToken);
     $signedToken = $cfs->getSignedToken($videoId);
     
     ...
