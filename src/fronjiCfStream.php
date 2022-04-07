@@ -23,6 +23,8 @@ class fronjicfstream
      */
     public function __construct($key, $zone, $email)
     {
+        ))
+
         dd($key, $zone, $email);
         if (empty($key) || empty($zone) || empty($email)) {
             throw new InvalidCredentialsException();
